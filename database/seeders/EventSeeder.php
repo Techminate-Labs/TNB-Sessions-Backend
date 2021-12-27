@@ -25,5 +25,17 @@ class EventSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now()
         ]);
+
+        DB::table('events')->insert([
+            'user_id' => '2',
+            'title' => 'discord bot',
+            'start' => '2021.12.25',
+            'end' => '2021.12.25',
+            'total hour' => '2',
+            'media' => 'zoom',
+            'pay_type' => 'paid',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 }

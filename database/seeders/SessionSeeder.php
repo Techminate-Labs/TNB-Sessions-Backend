@@ -13,12 +13,38 @@ class SessionSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            'role_id' => '1',
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('123456'),
+        DB::table('sessions')->insert([
+            'event_id' => '1',
+            'title' => 'Project Setup',
+            'start' => '2021.12.25',
+            'end' => '2021.12.25',
+            'meeting_link' => 'zoom',
+            'password' => '12321',
+            'payment' => '500',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('sessions')->insert([
+            'event_id' => '1',
+            'title' => 'Basic Commands',
+            'start' => '2021.12.25',
+            'end' => '2021.12.25',
+            'meeting_link' => 'zoom',
+            'password' => '12321',
+            'payment' => '500',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::table('sessions')->insert([
+            'event_id' => '2',
+            'title' => 'Project Setup',
+            'start' => '2021.12.25',
+            'end' => '2021.12.25',
+            'meeting_link' => 'zoom',
+            'password' => '12321',
+            'payment' => '500',
             'created_at' => now(),
             'updated_at' => now()
         ]);

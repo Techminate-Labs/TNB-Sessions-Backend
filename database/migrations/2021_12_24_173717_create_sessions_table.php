@@ -19,7 +19,6 @@ class CreateSessionsTable extends Migration
             $table->string('title')->nullable();
             $table->string('start')->nullable();
             $table->string('end')->nullable();
-            $table->string('total_hour')->nullable();
             $table->string('meeting_link')->nullable();
             $table->string('password')->nullable();
             $table->string('payment')->nullable();
