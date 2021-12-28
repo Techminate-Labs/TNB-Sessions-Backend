@@ -19,7 +19,7 @@ class CreateEventsTable extends Migration
             $table->string('title')->nullable();
             $table->string('start')->nullable();
             $table->string('end')->nullable();
-            $table->string('total_hour')->nullable();
+            $table->string('duration')->nullable();
             $table->string('media')->nullable();
             $table->string('pay_type')->nullable();
             $table->timestamps();
