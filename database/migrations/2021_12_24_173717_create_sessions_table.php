@@ -17,6 +17,7 @@ class CreateSessionsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('event_id');
             $table->string('title')->nullable();
+            $table->string('date')->nullable();
             $table->string('start')->nullable();
             $table->string('end')->nullable();
             $table->string('meeting_link')->nullable();
