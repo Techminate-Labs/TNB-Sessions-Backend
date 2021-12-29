@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class SessionSeeder extends Seeder
 {
@@ -21,7 +22,7 @@ class SessionSeeder extends Seeder
             'end' => '03:30',
             'meeting_link' => 'zoom',
             'password' => '12321',
-            'payment' => '500',
+            'fee' => '500',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -34,7 +35,7 @@ class SessionSeeder extends Seeder
             'end' => '03:30',
             'meeting_link' => 'zoom',
             'password' => '12321',
-            'payment' => '500',
+            'fee' => '500',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -47,7 +48,7 @@ class SessionSeeder extends Seeder
             'end' => '03:30',
             'meeting_link' => 'zoom',
             'password' => '12321',
-            'payment' => '500',
+            'fee' => '500',
             'created_at' => now(),
             'updated_at' => now()
         ]);

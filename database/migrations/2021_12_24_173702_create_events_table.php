@@ -22,6 +22,7 @@ class CreateEventsTable extends Migration
             $table->string('duration')->nullable();
             $table->string('media')->nullable();
             $table->string('pay_type')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

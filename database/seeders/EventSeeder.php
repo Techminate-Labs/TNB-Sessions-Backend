@@ -21,7 +21,7 @@ class EventSeeder extends Seeder
             'end' => '2021.12.25',
             'duration' => '2',
             'media' => 'zoom',
-            'pay_type' => 'paid',
+            'pay_type' => 'free',
             'created_at' => now(),
             'updated_at' => now()
         ]);

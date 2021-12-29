@@ -22,7 +22,9 @@ class CreateSessionsTable extends Migration
             $table->string('end')->nullable();
             $table->string('meeting_link')->nullable();
             $table->string('password')->nullable();
-            $table->string('payment')->nullable();
+            $table->string('fee')->nullable();
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
