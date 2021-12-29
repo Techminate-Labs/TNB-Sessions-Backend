@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProfileSeeder::class,
             ConfigSeeder::class,
+            EventSeeder::class,
+            SessionSeeder::class,
         ]);
     }
 }
