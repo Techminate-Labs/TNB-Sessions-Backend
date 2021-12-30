@@ -1,9 +1,9 @@
-//cartItem
-    Route::get('/cartItemList', [CartItemController::class, 'cartItemList']);
-    Route::get('/cartItemGetById/{id}', [CartItemController::class, 'cartItemGetById']);
-    Route::post('/cartItemCreate', [CartItemController::class, 'cartItemCreate']);
-    Route::put('/cartItemUpdate/{id}', [CartItemController::class, 'cartItemUpdate']);
-    Route::delete('/cartItemDelete/{id}', [CartItemController::class, 'cartItemDelete']);
+//session
+    Route::get('/sessionList', [SessionController::class, 'sessionList']);
+    Route::get('/sessionGetById/{id}', [SessionController::class, 'sessionGetById']);
+    Route::post('/sessionCreate', [SessionController::class, 'sessionCreate']);
+    Route::put('/sessionUpdate/{id}', [SessionController::class, 'sessionUpdate']);
+    Route::delete('/sessionDelete/{id}', [SessionController::class, 'sessionDelete']);
 
 
 $categories = $request->categories;

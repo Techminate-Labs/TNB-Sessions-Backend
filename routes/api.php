@@ -18,6 +18,9 @@ use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\System\ConfigurationController;
 use App\Http\Controllers\System\ActivityLogController;
 
+use App\Http\Controllers\Event\EventController;
+use App\Http\Controllers\Event\SessionController;
+
 
 Route::middleware('auth:sanctum','verified')->get('/user', function (Request $request) {
     return $request->user();
@@ -29,6 +32,19 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
 Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
+//event
+Route::get('/eventList', [EventController::class, 'list']);
+Route::get('/eventGetById/{id}', [EventController::class, 'getById']);
+Route::post('/eventCreate', [EventController::class, 'create']);
+Route::put('/eventUpdate/{id}', [EventController::class, 'update']);
+Route::delete('/eventDelete/{id}', [EventController::class, 'delete']);
+
+//session
+Route::get('/sessionList', [SessionController::class, 'list']);
+Route::get('/sessionGetById/{id}', [SessionController::class, 'getById']);
+Route::post('/sessionCreate', [SessionController::class, 'create']);
+Route::put('/sessionUpdate/{id}', [SessionController::class, 'update']);
+Route::delete('/sessionDelete/{id}', [SessionController::class, 'delete']);
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
