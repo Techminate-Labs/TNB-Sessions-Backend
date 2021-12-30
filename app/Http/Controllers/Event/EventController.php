@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 //Service
-use App\Services\Item\EventServices;
+use App\Services\Event\EventServices;
 
 class EventController extends Controller
 {
