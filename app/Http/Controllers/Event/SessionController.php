@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 //Service
-use App\Services\Item\SessionServices;
+use App\Services\Event\SessionServices;
 
 class SessionController extends Controller
 {
