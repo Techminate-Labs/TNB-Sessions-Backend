@@ -2,8 +2,6 @@
 
 namespace App\Services\Event;
 
-use Illuminate\Support\Str;
-
 //Services
 use App\Services\BaseServices;
 use App\Services\Validation\Event\EventValidation;
