@@ -21,6 +21,7 @@ use App\Http\Controllers\System\ActivityLogController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Event\SessionController;
 
+use App\Http\Controllers\Blockchain\DepositController;
 
 Route::middleware('auth:sanctum','verified')->get('/user', function (Request $request) {
     return $request->user();
@@ -45,6 +46,9 @@ Route::get('/sessionGetById/{id}', [SessionController::class, 'getById']);
 Route::post('/sessionCreate', [SessionController::class, 'create']);
 Route::put('/sessionUpdate/{id}', [SessionController::class, 'update']);
 Route::delete('/sessionDelete/{id}', [SessionController::class, 'delete']);
+
+//session
+Route::post('/registerPK', [DepositController::class, 'registerPK']);
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {

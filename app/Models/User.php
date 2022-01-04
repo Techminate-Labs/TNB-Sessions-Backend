@@ -52,6 +52,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Profile::class);
     }
 
+    public function account(){
+        return $this->hasOne(Account::class);
+    }
+
     // Password reset
     public function sendPasswordResetNotification($token)
     {
