@@ -1,22 +1,42 @@
 <?php
 
-namespace App\Services\Blockchain;
+namespace App\Services\Account;
 use Illuminate\Support\Facades\Http;
+
 //Services
 use App\Services\BaseServices;
+use App\Services\Validation\Account\DepositValidation;
 
 //Models
 use App\Models\Deposit;
+use App\Models\Tempregister;
 
 class DepositServices extends BaseServices{
 
+    private  $depositModel = Deposit::class;
+    private  $registerModel = Tempregister::class;
+
     public function registerPK($request){
-        $account_number = $request->account_number;
+        //check required
+        $fields = DepositValidation::validate1($request);
+        //check valid address
+
+        //check if address is already registered
+
         $verification_code = 'TNBS_'.date('md').'_'.date('is').mt_rand(10,100);
-        return[
-            'account_number' => $account_number,
-            'verification_code' => $verification_code
-        ];
+        $register = $this->baseRI->storeInDB(
+            $this->registerModel,
+            [
+                'account_number' => $fields['account_number'],
+                'verification_code' => $verification_code
+            ]
+        );
+
+        if($register){
+            return response($register,201);
+        }else{
+            return response(["failed"=>'Server Error'],500);
+        }
     }
 
     public function fetchUrl($url)

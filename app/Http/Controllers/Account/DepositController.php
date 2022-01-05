@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Blockchain;
+namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 //Service
-use App\Services\Blockchain\DepositServices;
+use App\Services\Account\DepositServices;
 
 class DepositController extends Controller
 {

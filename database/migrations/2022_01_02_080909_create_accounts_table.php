@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('account_number')->nullable();
-            $table->integer('balance')->nullable();
+            $table->BigInteger('balance');
             $table->timestamps();
         });
     }

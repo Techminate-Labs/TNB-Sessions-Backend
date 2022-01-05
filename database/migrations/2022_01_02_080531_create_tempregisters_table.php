@@ -15,6 +15,7 @@ class CreateTempregistersTable extends Migration
     {
         Schema::create('tempregisters', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
             $table->string('account_number')->nullable();
             $table->string('verification_code')->nullable();
             $table->timestamps();
