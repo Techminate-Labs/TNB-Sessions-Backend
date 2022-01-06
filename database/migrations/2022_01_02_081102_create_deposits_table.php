@@ -15,11 +15,11 @@ class CreateDepositsTable extends Migration
     {
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
-            $table->string('transaction_id')->nullable();
+            $table->string('transaction_id');
             $table->BigInteger('amount');
             $table->string('block_id');
-            $table->integer('confirmation_checks')->nullable();
-            $table->boolean('account_confirmed');
+            $table->integer('confirmation_checks');
+            $table->boolean('is_confirmed');
             $table->string('memo')->nullable();
             $table->string('sender');
             $table->timestamps();

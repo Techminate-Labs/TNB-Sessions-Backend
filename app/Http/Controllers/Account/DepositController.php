@@ -19,4 +19,8 @@ class DepositController extends Controller
     public function depositCreate(){
         return $this->services->depositCreate();
     }
+
+    public function checkConfirmations(){
+        return $this->services->checkConfirmations();
+    }
 }
