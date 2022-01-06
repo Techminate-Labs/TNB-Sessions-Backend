@@ -16,7 +16,7 @@ class DepositController extends Controller
         $this->services = $depositServices;
     }
 
-    public function registerPK(Request $request){
-        return $this->services->registerPK($request);
+    public function depositCreate(){
+        return $this->services->depositCreate();
     }
 }
