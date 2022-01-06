@@ -12,6 +12,11 @@ use App\Models\Deposit;
 
 class DepositServices extends BaseServices{
 
+    /**
+     * http://54.183.16.194/bank_transactions?recipient=a5dbcded3501291743e0cb4c6a186afa2c87a54f4a876c620dbd68385cba80d0&ordering=-block__created_date
+     * http://54.183.16.194/bank_transactions?recipient=8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74&ordering=-block__created_date
+     * http://54.183.16.194/confirmation_blocks?block=aa5c09a7-c573-4dd1-b06b-b123eb5880ff
+     */
     private  $depositModel = Deposit::class;
 
     public function fetchUrl($url)
@@ -44,7 +49,6 @@ class DepositServices extends BaseServices{
             $data = $this->fetchUrl($next_url);
             $bankTransactions = $data->results;
             $next_url = $data->next;
-            // return $bankTransactions;
 
             foreach($bankTransactions as $bankTransaction){
                 $deposit = $this->baseRI->storeInDB(
@@ -53,14 +57,14 @@ class DepositServices extends BaseServices{
                         'transaction_id'=> $bankTransaction->id,
                         'amount'=>$bankTransaction->amount,
                         'block_id'=>$bankTransaction->block->id,
-                        'confimation_checks' => 0,
-                        'account_confirmed'=>False,
+                        'confirmation_checks' => 0,
+                        'is_confirmed'=> false,
                         'memo'=>$bankTransaction->memo,
                         'sender'=>$bankTransaction->block->sender,
                     ]
                 );
             }
-            
+            return response(["message"=>'ok'],201);
         }
     }
 
@@ -68,17 +72,61 @@ class DepositServices extends BaseServices{
         return $this->checkDeposits();
     }
 
+    public function handleDepositConfirmation($deposit){
+        /**
+         * Update confirmation status of deposit
+         * Increase users balance or create new user if they don't already exist
+        */
+        $deposit->is_confirmed = true;
+        $deposit->save();
+
+        //check register model
+
+        //create account
+
+        //update account
+    }
+
+    public function increaseConfirmationCheck($deposit){
+        /**
+         * Increment the number of confirmation checks for the given deposit
+        */
+        $deposit->confirmation_checks +=1;
+        $deposit->save();
+    }
+
     public function checkConfirmations(){
         /**
          * Check bank for confirmation status
          * Query unconfirmed deposits from database
-         * http://54.183.16.194/bank_transactions?recipient=a5dbcded3501291743e0cb4c6a186afa2c87a54f4a876c620dbd68385cba80d0&ordering=-block__created_date
-         * http://54.183.16.194/bank_transactions?recipient=8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74&ordering=-block__created_date
          */
-        $app_pk = '8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74';
+        $maxConfirmationChecks = 15;
         $protocol = 'http';
-        $bank = '20.98.98.0';
-        $url = $protocol.'://'.$bank.'/bank_transactions?recipient='.$app_pk.'&ordering=-block__created_date';
-        $fetch = Http::get($url);
+        $bank = '54.183.16.194';
+        
+        $unconfirmedDeposits = Deposit::where('is_confirmed',0)->where('confirmation_checks', '<', $maxConfirmationChecks)->get();
+        foreach($unconfirmedDeposits as $deposit){
+            $blockId = $deposit->block_id;
+            $url = $protocol.'://'.$bank.'/confirmation_blocks?block='.$blockId;
+            $data = $this->fetchUrl($url);
+            $confirmation = $data->count;
+            if($confirmation){
+                #businesss logics 
+                $this->handleDepositConfirmation($deposit);
+            }else{
+                $this->increaseConfirmationCheck($deposit);
+            }
+        }
+        // return $unconfirmedDeposits;
+        // return $blockId;
+    }
+
+    public function pullBlockchain(){
+        /**
+        * Poll blockchain for new transactions/deposits sent to the bot account
+        * Only accept confirmed transactions
+        */
+        $this->checkDeposits();
+        $this->checkConfirmations();
     }
 }
