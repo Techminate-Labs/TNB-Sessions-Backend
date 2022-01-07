@@ -10,6 +10,7 @@ use App\Services\Validation\Account\DepositValidation;
 //Models
 use App\Models\Deposit;
 use App\Models\Tempregister;
+use App\Models\Account;
 
 class DepositServices extends BaseServices{
 
@@ -20,6 +21,8 @@ class DepositServices extends BaseServices{
      * http://54.183.16.194/confirmation_blocks?block=&block__signature=a44d171d9f0ba0f6d0c0c489b9a17d24dd38734a4428fdf85ea08e1ca821086dae6601d20c3a0bcfc94e73b3f77092026d179391752702dd76adf38c50b8cb06
      */
     private  $depositModel = Deposit::class;
+    private  $registerModel = Tempregister::class;
+    private  $accountModel = Account::class;
 
     public function fetchUrl($url)
     {
@@ -83,14 +86,23 @@ class DepositServices extends BaseServices{
         $deposit->save();
 
         //check register model
-        $registation = Tempregister::where('account_number',$deposit->sender)->where('verification_code', $deposit->memp)->first();
+        $requestRegistration = Tempregister::where('account_number',$deposit->sender)->where('verification_code', $deposit->memo)->first();
         //create account
-        if($registation) {
-           return 'create new account';
+        if($requestRegistration) {
+            $account = $this->baseRI->storeInDB(
+                $this->accountModel,
+                [
+                    'user_id' => auth()->user()->id,
+                    'account_number' => $requestRegistration->account_number,
+                    'balance' => 0
+                ]
+            );
+            if($account){
+                $requestRegistration->delete();
+            }
         }else{
             return 'update account information';
         }
-        //update account
     }
 
     public function increaseConfirmationCheck($deposit){
