@@ -87,7 +87,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //account
     Route::post('/registerPK', [AccountController::class, 'registerPK']);
-    Route::get('/depositCreate', [DepositController::class, 'depositCreate']);
+    Route::get('/storeDeposits', [DepositController::class, 'storeDeposits']);
     Route::get('/checkConfirmations', [DepositController::class, 'checkConfirmations']);
 });
 

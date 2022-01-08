@@ -2,6 +2,7 @@
 
 namespace App\Services\Account;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 //Services
 use App\Services\BaseServices;
@@ -11,6 +12,10 @@ use App\Services\Validation\Account\DepositValidation;
 use App\Models\Deposit;
 use App\Models\Tempregister;
 use App\Models\Account;
+use App\Models\Scantracker;
+
+//Utilities
+use App\Utilities\HttpUtilities;
 
 class DepositServices extends BaseServices{
 
@@ -23,39 +28,30 @@ class DepositServices extends BaseServices{
     private  $depositModel = Deposit::class;
     private  $registerModel = Tempregister::class;
     private  $accountModel = Account::class;
+    private  $scanTrackerModel = Scantracker::class;
 
-    public function fetchUrl($url)
-    {
-        $response_json = file_get_contents($url);
-        if(false !== $response_json) {
-            try {
-                $response = json_decode($response_json);
-                if(http_response_code(200)) {
-                    return $response;
-                }
-            }
-            catch(Exception $e) {
-                return [];
-            }
-        }
-    }
-
-    public function checkDeposits(){
+    public function storeDeposits(){
         /**
          * Fetch bank transactions from bank
          * Insert new deposits into database
          */
-        $app_pk = '8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74';
+        $app_pk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
         $protocol = 'http';
+        // $bank = '54.183.16.194';
         $bank = '20.98.98.0';
         $next_url = $protocol.'://'.$bank.'/bank_transactions?recipient='.$app_pk.'&ordering=-block__created_date';
         
         while($next_url) {
-            $data = $this->fetchUrl($next_url);
+            $data = HttpUtilities::fetchUrl($next_url);
             $bankTransactions = $data->results;
             $next_url = $data->next;
 
             foreach($bankTransactions as $bankTransaction){
+                
+                $transactionExist = Deposit::where('transaction_id',$bankTransaction->id)->first();
+                if($transactionExist){
+                    continue;
+                }
                 $deposit = $this->baseRI->storeInDB(
                     $this->depositModel,
                     [
@@ -69,15 +65,23 @@ class DepositServices extends BaseServices{
                     ]
                 );
             }
-            return response(["message"=>'ok'],201);
+            $lastDepositId = DB::getPdo()->lastInsertId();
+            if($lastDepositId){
+                $lastDeposit = Deposit::where('id',$lastDepositId)->first();
+                $lastScanned = $this->baseRI->storeInDB(
+                    $this->scanTrackerModel,
+                    [
+                        'last_scanned'=> $lastDeposit->created_at,
+                    ]
+                );
+                return response(["message"=>$lastScanned],201);
+            }else{
+                return response(["message"=>'ok'],201);
+            }
         }
     }
 
-    public function depositCreate(){
-        return $this->checkDeposits();
-    }
-
-    public function handleDepositConfirmation($deposit){
+    public function businessLogics($deposit){
         /**
          * Update confirmation status of deposit
          * Increase users balance or create new user if they don't already exist
@@ -87,8 +91,8 @@ class DepositServices extends BaseServices{
 
         //check register model
         $requestRegistration = Tempregister::where('account_number',$deposit->sender)->where('verification_code', $deposit->memo)->first();
-        //create account
-        if($requestRegistration) {
+        if($requestRegistration){
+            //create new account
             $account = $this->baseRI->storeInDB(
                 $this->accountModel,
                 [
@@ -107,14 +111,6 @@ class DepositServices extends BaseServices{
         }
     }
 
-    public function increaseConfirmationCheck($deposit){
-        /**
-         * Increment the number of confirmation checks for the given deposit
-        */
-        $deposit->confirmation_checks +=1;
-        $deposit->save();
-    }
-
     public function checkConfirmations(){
         /**
          * Check bank for confirmation status
@@ -122,19 +118,21 @@ class DepositServices extends BaseServices{
          */
         $maxConfirmationChecks = 15;
         $protocol = 'http';
-        $bank = '54.183.16.194';
+        // $bank = '54.183.16.194';
+        $bank = '20.98.98.0';
         
         $unconfirmedDeposits = Deposit::where('is_confirmed',0)->where('confirmation_checks', '<', $maxConfirmationChecks)->get();
         foreach($unconfirmedDeposits as $deposit){
-            $blockId = $deposit->block_id;
-            $url = $protocol.'://'.$bank.'/confirmation_blocks?block='.$blockId;
-            $data = $this->fetchUrl($url);
-            $confirmation = $data->count;
+            // $blockId = $deposit->block_id;
+            // $url = $protocol.'://'.$bank.'/confirmation_blocks?block='.$blockId;
+            // $data = HttpUtilities::fetchUrl($url);
+            // $confirmation = $data->count;
+            $confirmation = 1;
             if($confirmation){
-                #businesss logics 
-                $this->handleDepositConfirmation($deposit);
+                $this->businessLogics($deposit);
             }else{
-                $this->increaseConfirmationCheck($deposit);
+                $deposit->confirmation_checks +=1;
+                $deposit->save();
             }
         }
         // return $unconfirmedDeposits;
@@ -143,10 +141,10 @@ class DepositServices extends BaseServices{
 
     public function pullBlockchain(){
         /**
-        * Poll blockchain for new transactions/deposits sent to the bot account
+        * Poll blockchain for new transactions/deposits sent to the account
         * Only accept confirmed transactions
         */
-        $this->checkDeposits();
+        $this->storeDeposits();
         $this->checkConfirmations();
     }
 }
