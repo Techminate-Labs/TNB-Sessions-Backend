@@ -101,7 +101,9 @@ class DepositServices extends BaseServices{
                 $requestRegistration->delete();
             }
         }else{
-            return 'update account information';
+            $account = Account::where('account_number',$deposit->sender)->first();
+            $account->balance = $account->balance + $deposit->amount;
+            $account->save();
         }
     }
 
