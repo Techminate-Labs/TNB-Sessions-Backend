@@ -16,8 +16,8 @@ class DepositController extends Controller
         $this->services = $depositServices;
     }
 
-    public function depositCreate(){
-        return $this->services->depositCreate();
+    public function storeDeposits(){
+        return $this->services->storeDeposits();
     }
 
     public function checkConfirmations(){
