@@ -30,11 +30,25 @@ class DepositServices extends BaseServices{
     private  $accountModel = Account::class;
     private  $scanTrackerModel = Scantracker::class;
 
+    public function deleteConfirmedDeposits($scanTracker){
+        // where time less than scanTracker
+        // where is_confirmed is true
+        $oldDeposits = Deposit::orderBy('id', 'DESC')
+        ->where('created_at', '<', $scanTracker->last_scanned)
+        ->where('is_confirmed', 1)
+        ->get();
+        foreach($oldDeposits as $deposit){
+            $deposit->delete();
+        }
+    }
+
     public function storeDeposits(){
         /**
          * Fetch bank transactions from bank
          * Insert new deposits into database
          */
+        $scanTracker = Scantracker::orderBy('id', 'DESC')->first();
+        // $this->deleteConfirmedDeposits($scanTracker);
         $app_pk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
         $protocol = 'http';
         // $bank = '54.183.16.194';
@@ -47,36 +61,47 @@ class DepositServices extends BaseServices{
             $next_url = $data->next;
 
             foreach($bankTransactions as $bankTransaction){
-                
+                $lastScanned = strtotime($scanTracker->last_scanned);
+                $transactionTime = strtotime($bankTransaction->block->created_date);
                 $transactionExist = Deposit::where('transaction_id',$bankTransaction->id)->first();
-                if($transactionExist){
+                if($lastScanned > $transactionTime){
+                    print($lastScanned ."\n");
+                    print($transactionTime.'\n');
+                    print("last transaction gt transaction time \n");
                     continue;
+                }elseif($transactionExist){
+                    print("transaction exits \n");
+                    continue; 
+                }else{
+                    print("added one deposit \n");
+                    $deposit = $this->baseRI->storeInDB(
+                        $this->depositModel,
+                        [
+                            'transaction_id'=> $bankTransaction->id,
+                            'amount'=>$bankTransaction->amount,
+                            'block_id'=>$bankTransaction->block->id,
+                            'confirmation_checks' => 0,
+                            'is_confirmed'=> false,
+                            'memo'=>$bankTransaction->memo,
+                            'sender'=>$bankTransaction->block->sender,
+                        ]
+                    );
                 }
-                $deposit = $this->baseRI->storeInDB(
-                    $this->depositModel,
-                    [
-                        'transaction_id'=> $bankTransaction->id,
-                        'amount'=>$bankTransaction->amount,
-                        'block_id'=>$bankTransaction->block->id,
-                        'confirmation_checks' => 0,
-                        'is_confirmed'=> false,
-                        'memo'=>$bankTransaction->memo,
-                        'sender'=>$bankTransaction->block->sender,
-                    ]
-                );
             }
-            $lastDepositId = DB::getPdo()->lastInsertId();
-            if($lastDepositId){
-                $lastDeposit = Deposit::where('id',$lastDepositId)->first();
-                $lastScanned = $this->baseRI->storeInDB(
+            $lastDepositId = Deposit::orderBy('id', 'DESC')->first();
+            
+            if($scanTracker){
+                $scanTracker->last_scanned = $lastDepositId->created_at;
+                $scanTracker->save();
+                return response(["message"=>$scanTracker],201);
+            }else{
+                $scanTracker = $this->baseRI->storeInDB(
                     $this->scanTrackerModel,
                     [
-                        'last_scanned'=> $lastDeposit->created_at,
+                        'last_scanned'=> $lastDepositId->created_at
                     ]
                 );
-                return response(["message"=>$lastScanned],201);
-            }else{
-                return response(["message"=>'ok'],201);
+                return response(["message"=>$scanTracker],201);
             }
         }
     }
