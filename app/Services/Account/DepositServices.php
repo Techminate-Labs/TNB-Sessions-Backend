@@ -73,16 +73,14 @@ class DepositServices extends BaseServices{
                     $lastScanned = strtotime($scanTracker->last_scanned);
                     $transactionTime = strtotime($bankTransaction->block->created_date);
                     $transactionExist = Deposit::where('transaction_id',$bankTransaction->id)->first();
-                    if($lastScanned > $transactionTime){
-                        print($lastScanned ."\n");
-                        print($transactionTime."\n");
-                        print("last scanned gt transaction time \n");
-                        continue;
+                    if($transactionTime < $lastScanned){
+                        print("breaking the loop \n");
+                        break;
                     }elseif($transactionExist){
                         print("transaction exits \n");
                         continue; 
                     }else{
-                        print("added one deposit \n");
+                        print("added new deposit \n");
                         $this->saveDeposit($bankTransaction);
                     }
                 }else{
