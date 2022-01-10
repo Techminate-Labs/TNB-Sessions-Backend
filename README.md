@@ -1,25 +1,21 @@
-TNB-POS is a Point of Sales specially designed to accept "TNBC" as the payment. "TNBC" the Crypto Currency of "The New Boston".
+# TNB Sessions, Eveent Manager
 
-Framework : Laravel
+TNB-Sessions is an event management web application that integrates with the TNB blockchain and community.
 
-Packages : Sanctum
+[More information about TNB / The New Boston](https://thenewboston.com/)
 
-Setup Instructions : 
+Framework: Laravel
+Packages: Sanctum
 
-step 1 : Install xampp
+## Setup instructions 
 
-step 2 : then go to xampp/htdocs
-
-step 3 : clone this github repo
-
-step 4 : rename env.xample to .env and add database name
-
-step 5 : create a database in phpmyadmin or any sql database
-
-step 6 : open terminal and run "composer install"
-
-step 7 : then run "php artisan storage:link"
-
-step 8 : then run "php artisan serve"
-
-
+1. Install xampp
+2. then go to `xampp\htdocs`
+3. fork this repository
+4. clone the forked repository in the `xampp\htdocs` folder
+5. launch xampp, start apache and mysql modules and go to `localhost/phpmyadmin`
+5. create a database and add it to the database in env.example
+6. copy env.example and name it .env
+7. open terminal and run `composer install`
+8. then run `php artisan storage:link`
+9. then run `php artisan serve`
