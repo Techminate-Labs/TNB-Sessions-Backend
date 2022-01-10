@@ -94,7 +94,7 @@ class DepositServices extends BaseServices{
                 $scanTracker->last_scanned = $lastDepositId->created_at;
                 $scanTracker->save();
                 $this->deleteConfirmedDeposits($scanTracker);
-                return response(["message"=>$scanTracker],201);
+                return response(["message"=>"data pulled"],201);
             }else{
                 $scanTracker = $this->baseRI->storeInDB(
                     $this->scanTrackerModel,
@@ -103,7 +103,7 @@ class DepositServices extends BaseServices{
                     ]
                 );
                 $this->deleteConfirmedDeposits($scanTracker);
-                return response(["message"=>$scanTracker],201);
+                return response(["message"=>"data pulled"],201);
             }
         }
     }
