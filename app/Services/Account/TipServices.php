@@ -17,6 +17,8 @@ class TipServices extends BaseServices{
         //amount would be transfered from sender to recipient account
         //check if sender and recipient has account number
         //check if sender has enough balance in account
+        //total wallet balance, total fee collected,
+        //Direction (incoming, outgoing)
 
         $recipientID = $request->user_id;
         $amount = (int)$request->amount;
