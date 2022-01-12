@@ -60,4 +60,18 @@ class SessionUserServices extends BaseServices{
             return response(["message"=>'account not found.'],200);
         }
     }
+
+    public function userSession(){
+        $userId = auth()->user()->id;
+        $sessionIds = SessionUser::where('user_id',$userId)->get();
+        return $sessionIds;
+        foreach($sessionIds as $sessionId){
+            $session = Session::where('id',$sessionId)->first();
+            $event = Event::where('id',$session->event_id)->first();
+            $data = [
+                'event_id'=> $event->id,
+                'session_id'=>$session->id
+            ];
+        }
+    }
 }
