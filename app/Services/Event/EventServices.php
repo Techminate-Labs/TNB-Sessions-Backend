@@ -27,7 +27,8 @@ class EventServices extends BaseServices{
     public function getById($id){
         $event = $this->baseRI->findById($this->eventModel, $id);
         if($event){
-            return $event;
+            $sessions = $event->session;
+            return response(["event"=> $event],200);
         }else{
             return response(["message"=>'event not found'],404);
         }

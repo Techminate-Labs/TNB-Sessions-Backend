@@ -1,41 +1,39 @@
 <?php
 
 namespace App\Services\Event;
+use Illuminate\Support\Facades\DB;
 
 //Services
 use App\Services\BaseServices;
 use App\Services\Validation\Event\SessionValidation;
 
 //Models
+use App\Models\User;
 use App\Models\Account;
 use App\Models\Session;
-use App\Models\SessionUser;
+use App\Models\Event;
 
-class SessionUserServices extends BaseServices{
-    private $sessionUserModel = SessionUser::class;
+class EnrollmentServices extends BaseServices{
 
-    public function createSessionUser($sessionId, $userId){
-        $this->baseRI->storeInDB(
-            $this->sessionUserModel,
-            [
-                'session_id'=> $sessionId,
-                'user_id'=>$userId,
-            ]
-        );
+    public function createEnrollment($sessionId, $userId){
+        DB::table('session_user')->insert([
+            'session_id'=> $sessionId,
+            'user_id'=>$userId,
+        ]);
     }
 
-    public function enrollSession($request){
+    public function enrollToSession($request){
         $userId = auth()->user()->id;
         $sessionId = $request->session_id;
-        $sessionUserExit = SessionUser::where('session_id',$sessionId)->where('user_id',$userId)->first();
+        
+        $sessionUserExit = DB::table('session_user')->where('session_id',$sessionId)->where('user_id',$userId)->first();
         
         if($sessionUserExit){
             return response(["message"=>'you are already enrolled to the session.'],200);
         }
-
-        $session = Session::where('id',$sessionId)->first();
         $instAccount = Account::where('user_id',2)->first();
         $stdAccount = Account::where('user_id',$userId)->first();
+        $session = Session::where('id',$sessionId)->first();
         $fee = (int)$session->fee;
 
         if($stdAccount && $instAccount){
@@ -46,7 +44,9 @@ class SessionUserServices extends BaseServices{
                 $instAccount->balance = $instAccBal + $fee;
                 $stdAccount->save();
                 $instAccount->save();
-                $this->createSessionUser($sessionId, $userId);
+                // $user = User::find($userId);
+                // $user->session()->attach([$sessionId]);
+                $this->createEnrollment($sessionId, $userId);
                 $response = [
                     "message"=>'enrollment has been completed successfully',
                     'session' => $session->title,
@@ -61,17 +61,21 @@ class SessionUserServices extends BaseServices{
         }
     }
 
-    public function userSession(){
+    public function enrolledSessions($request){
         $userId = auth()->user()->id;
-        $sessionIds = SessionUser::where('user_id',$userId)->get();
-        return $sessionIds;
-        foreach($sessionIds as $sessionId){
-            $session = Session::where('id',$sessionId)->first();
+        $sessionId = $request->session_id;
+        $user = User::find($userId);
+        $sessions = $user->session;
+        
+        $events = [];
+        foreach ($sessions as $session){
             $event = Event::where('id',$session->event_id)->first();
-            $data = [
-                'event_id'=> $event->id,
-                'session_id'=>$session->id
-            ];
+            if(isset($events[$session->event_id])){
+                continue;
+            }else{
+                array_push($events, $event);
+            } 
         }
+        return $events;
     }
 }

@@ -11,7 +11,7 @@ use App\Models\Session;
 
 class SessionServices extends BaseServices{
     
-    private $SessionModel = Session::class;
+    private $sessionModel = Session::class;
 
     public function list($request){
         $prop1 = 'title';
@@ -26,6 +26,7 @@ class SessionServices extends BaseServices{
     public function getById($id){
         $session = $this->baseRI->findById($this->sessionModel, $id);
         if($session){
+            $event = $session->event;
             return $session;
         }else{
             return response(["message"=>'session not found'],404);
