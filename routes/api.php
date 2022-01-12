@@ -20,7 +20,7 @@ use App\Http\Controllers\System\ActivityLogController;
 
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Event\SessionController;
-use App\Http\Controllers\Event\SessionUserController;
+use App\Http\Controllers\Event\EnrollmentController;
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\DepositController;
@@ -92,6 +92,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/sessionCreate', [SessionController::class, 'create']);
     Route::put('/sessionUpdate/{id}', [SessionController::class, 'update']);
     Route::delete('/sessionDelete/{id}', [SessionController::class, 'delete']);
-    Route::post('/enrollSession', [SessionUserController::class, 'enrollSession']);
+
+    //enrollment
+    Route::post('/enrollToSession', [EnrollmentController::class, 'enrollToSession']);
+    Route::get('/enrolledSessions', [EnrollmentController::class, 'enrolledSessions']);
 });
 

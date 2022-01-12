@@ -12,6 +12,10 @@ class Session extends Model
     protected $guarded=[];
 
     public function event(){
-        return $this->belongsTo(Event::class,'id','event_id');
+        return $this->belongsTo(Event::class);
+    }
+
+    public function user(){
+        return $this->belongsToMany(User::class)->withTimeStamps();
     }
 }

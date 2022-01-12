@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSessionUsersTable extends Migration
+class CreateSessionUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSessionUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('session_users', function (Blueprint $table) {
+        Schema::create('session_user', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('session_id');
             $table->unsignedBigInteger('user_id');
@@ -28,6 +28,6 @@ class CreateSessionUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('session_users');
+        Schema::dropIfExists('session_user');
     }
 }

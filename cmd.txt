@@ -1,0 +1,24 @@
+REL_PUB_FOLD="/../../tnbpos.com/"
+
+{{URL}}/api/users/?searchText=sazid
+
+$ php artisan make:resource UserResource
+
+$ php artisan make:provider RepositoriesServiceProvider
+register the RepositoriesServiceProvider in config->app->application service provider
+
+Controller -> Service -> Interface -> Repository -> Model 
+
+php artisan config:clear
+php artisan clear-compiled
+php artisan config:cache
+php artisan optimize
+
+php artisan make:seeder UserSeeder
+
+php -S localhost:8000 -t public
+
+php artisan make:migration create_user_table
+php artisan make:migration create_role_user_table --create role_user
+
+factory(\App\Models\User::class)->create();
