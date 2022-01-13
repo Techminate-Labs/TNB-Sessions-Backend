@@ -8,7 +8,6 @@ use App\Services\BaseServices;
 use App\Services\Validation\Event\SessionValidation;
 
 //Models
-use App\Models\User;
 use App\Models\Account;
 use App\Models\Session;
 use App\Models\Event;
@@ -44,7 +43,7 @@ class EnrollmentServices extends BaseServices{
                 $instAccount->balance = $instAccBal + $fee;
                 $stdAccount->save();
                 $instAccount->save();
-                // $user = User::find($userId);
+                // $user = $this->authUser();
                 // $user->session()->attach([$sessionId]);
                 $this->createEnrollment($sessionId, $userId);
                 $response = [
@@ -61,21 +60,34 @@ class EnrollmentServices extends BaseServices{
         }
     }
 
-    public function enrolledSessions($request){
-        $userId = auth()->user()->id;
-        $sessionId = $request->session_id;
-        $user = User::find($userId);
+    public function enrolledEvents($request){
+        $user = $this->authUser();
         $sessions = $user->session;
-        
         $events = [];
         foreach ($sessions as $session){
-            $event = Event::where('id',$session->event_id)->first();
-            if(isset($events[$session->event_id])){
-                continue;
-            }else{
+            if(!isset($events[$session->event_id])){
+                $event = Event::where('id',$session->event_id)->first();
                 array_push($events, $event);
+            }else{
+                continue;
             } 
         }
-        return $events;
+        // return $events;
+        return array_unique($events);
+    }
+
+    public function enrolledSessions($request){
+        $eventId = $request->event_id;
+        $user = $this->authUser();
+        $sessions = $user->session;
+        $eventSessions = [];
+        foreach ($sessions as $session){
+            if($session->event_id != $eventId){
+                continue;
+            }else{
+                array_push($eventSessions, $session);
+            } 
+        }
+        return $eventSessions;
     }
 }
