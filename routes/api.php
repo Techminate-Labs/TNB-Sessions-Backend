@@ -95,6 +95,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //enrollment
     Route::post('/enrollToSession', [EnrollmentController::class, 'enrollToSession']);
+    Route::get('/enrolledEvents', [EnrollmentController::class, 'enrolledEvents']);
     Route::get('/enrolledSessions', [EnrollmentController::class, 'enrolledSessions']);
 });
 

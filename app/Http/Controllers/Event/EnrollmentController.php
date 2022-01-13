@@ -21,8 +21,15 @@ class EnrollmentController extends Controller
         return $this->services->enrollToSession($request);
     }
 
+    public function enrolledEvents(Request $request)
+    {
+        return $this->services->enrolledEvents($request);
+    }
+
     public function enrolledSessions(Request $request)
     {
         return $this->services->enrolledSessions($request);
     }
+
+    
 }
