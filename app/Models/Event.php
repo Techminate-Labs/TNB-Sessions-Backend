@@ -14,4 +14,8 @@ class Event extends Model
     public function session(){
         return $this->hasMany(Session::class);
     }
+
+    public function review(){
+        return $this->hasMany(Review::class);
+    }
 }
