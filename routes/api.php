@@ -21,6 +21,7 @@ use App\Http\Controllers\System\ActivityLogController;
 use App\Http\Controllers\Event\EventController;
 use App\Http\Controllers\Event\SessionController;
 use App\Http\Controllers\Event\EnrollmentController;
+use App\Http\Controllers\Event\ReviewController;
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\DepositController;
@@ -97,5 +98,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/enrollToSession', [EnrollmentController::class, 'enrollToSession']);
     Route::get('/enrolledEvents', [EnrollmentController::class, 'enrolledEvents']);
     Route::get('/enrolledSessions', [EnrollmentController::class, 'enrolledSessions']);
+
+    
+    //Review
+    Route::get('/reviewList', [ReviewController::class, 'list']);
+    Route::get('/reviewGetById/{id}', [ReviewController::class, 'getById']);
+    Route::post('/reviewCreate', [ReviewController::class, 'create']);
+    Route::put('/reviewUpdate/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviewDelete/{id}', [ReviewController::class, 'delete']);
+
 });
 

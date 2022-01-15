@@ -1,10 +1,9 @@
-//session
-    Route::get('/sessionList', [SessionController::class, 'sessionList']);
-    Route::get('/sessionGetById/{id}', [SessionController::class, 'sessionGetById']);
-    Route::post('/sessionCreate', [SessionController::class, 'sessionCreate']);
-    Route::put('/sessionUpdate/{id}', [SessionController::class, 'sessionUpdate']);
-    Route::delete('/sessionDelete/{id}', [SessionController::class, 'sessionDelete']);
-
+//review
+Route::get('/reviewList', [ReviewController::class, 'list']);
+    Route::get('/reviewGetById/{id}', [ReviewController::class, 'getById']);
+    Route::post('/reviewCreate', [ReviewController::class, 'create']);
+    Route::put('/reviewUpdate/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviewDelete/{id}', [ReviewController::class, 'delete']);
 
 $categories = $request->categories;
 
