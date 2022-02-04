@@ -52,7 +52,7 @@ class ReviewServices extends BaseServices{
 
     public function reviewUpdate($request, $id){
         $this->logCreate($request);
-        $request->validate([
+        $request->validate([ 
             'name'=>'required',
             'permissions'=>'required'
         ]);
