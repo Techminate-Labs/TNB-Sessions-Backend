@@ -11,9 +11,9 @@ use App\Services\BaseServices;
 use App\Models\Account;
 
 class WithdrawServices extends BaseServices{
-    public function withdraw($request){
-        //request validation
-        //amount would be transfered from sender to recipient account
+    public function temp($request){
+        //encode hexadecimal
+        //signing
         //check if sender and recipient has account number
         //check if sender has enough balance in account
         //total wallet balance, total fee collected,
@@ -25,31 +25,18 @@ class WithdrawServices extends BaseServices{
 
         $senderAcc = Account::where('user_id', $senderId)->first();
         $recipientAcc = Account::where('user_id', $recipientID)->first();
-
-        if($senderAcc && $recipientAcc){
-            $senderbalance = $senderAcc->balance;
-            $recipientbalance = $recipientAcc->balance;
-
-            if($senderbalance >= $amount){
-                $recipientbalance = $recipientbalance + $amount;
-                $recipientAcc->balance = $recipientbalance;
-                $recipientAcc->save();
-
-                $senderbalance = $senderbalance - $amount;
-                $senderAcc->balance = $senderbalance;
-                $senderAcc->save();
-                return [
-                    'recipientID' => $recipientID,
-                    'senderId' => $senderId,
-                    'amount' => $amount,
-                    'senderbalance' => $senderbalance,
-                    'recipientbalance' => $recipientbalance
-                ];
-            }else{
-                return response(["message"=>'insufficient balance.'],200);
-            }
-        }else{
-            return 'account not found';
-        }
     }
+
+    public function generate_block($balance_lock, $transactions, $signing_key){
+        //
+    }
+
+        
+    public function is_valid_key($key){
+        # Check if signing key is valid hexadecimal
+       
+        # Check if the length of the key is 64
+    }
+    
+
 }
