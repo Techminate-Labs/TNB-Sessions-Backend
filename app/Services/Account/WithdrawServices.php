@@ -11,20 +11,22 @@ use App\Services\BaseServices;
 use App\Models\Account;
 
 class WithdrawServices extends BaseServices{
-    public function temp($request){
+
+    public function withdraw($request){
         //encode hexadecimal
         //signing
-        //check if sender and recipient has account number
         //check if sender has enough balance in account
-        //total wallet balance, total fee collected,
-        //Direction (incoming, outgoing)
+        //total wallet balance
+        //display withdrawable amount
 
-        $recipientID = $request->user_id;
-        $amount = (int)$request->amount;
-        $senderId = auth()->user()->id;
-
-        $senderAcc = Account::where('user_id', $senderId)->first();
-        $recipientAcc = Account::where('user_id', $recipientID)->first();
+        if ($request->has('amount')){
+            $amount = (int)$request->amount;
+            $recipentId = auth()->user()->id;
+            $recipientAcc = Account::where('user_id', $recipentId)->first();
+            return $amount;
+        }else{
+            return "Insert withdraw amount";
+        }
     }
 
     public function generate_block($balance_lock, $transactions, $signing_key){

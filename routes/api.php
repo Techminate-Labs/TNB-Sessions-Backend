@@ -80,7 +80,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/storeDeposits', [DepositController::class, 'storeDeposits']);
     Route::get('/checkConfirmations', [DepositController::class, 'checkConfirmations']);
     Route::post('/sendTip', [TipController::class, 'sendTip']);
-    Route::post('/withdraw', [TipController::class, 'withdraw']);
+    Route::get('/withdraw', [WithdrawController::class, 'withdraw']);
 
     //event
     Route::get('/eventList', [EventController::class, 'list']);
