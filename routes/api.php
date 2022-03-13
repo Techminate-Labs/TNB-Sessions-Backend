@@ -25,6 +25,7 @@ use App\Http\Controllers\Event\ReviewController;
 
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Account\DepositController;
+use App\Http\Controllers\Account\WithdrawController;
 use App\Http\Controllers\Account\TipController;
 
 Route::middleware('auth:sanctum','verified')->get('/user', function (Request $request) {
@@ -79,6 +80,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/storeDeposits', [DepositController::class, 'storeDeposits']);
     Route::get('/checkConfirmations', [DepositController::class, 'checkConfirmations']);
     Route::post('/sendTip', [TipController::class, 'sendTip']);
+    Route::post('/withdraw', [TipController::class, 'withdraw']);
 
     //event
     Route::get('/eventList', [EventController::class, 'list']);
