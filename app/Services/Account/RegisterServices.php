@@ -20,7 +20,8 @@ class RegisterServices extends BaseServices{
         //check required
         $fields = AccountValidation::validate1($request);
         $account_number = $fields['account_number'];
-        $agentPk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
+        // $agentPk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
+        $agentPk = '8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74';
         //check valid address
         $validatePK = AccountValidation::validate2($account_number);
         if (!$validatePK){
