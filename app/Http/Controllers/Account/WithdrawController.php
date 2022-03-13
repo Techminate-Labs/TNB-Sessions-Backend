@@ -16,8 +16,8 @@ class WithdrawController extends Controller
         $this->services = $withdrawServices;
     }
 
-    public function withdraw(){
-        return "ok";
+    public function withdraw(Request $request){
+        return $this->services->withdraw($request);
     }
 
     public function checkConfirmations(){
