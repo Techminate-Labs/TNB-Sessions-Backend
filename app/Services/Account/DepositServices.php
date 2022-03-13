@@ -57,9 +57,11 @@ class DepositServices extends BaseServices{
          * Insert new deposits into database
          */
         $scanTracker = Scantracker::orderBy('id', 'DESC')->first();
-        $app_pk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
         $protocol = 'http';
+        // $app_pk = '9c22ee4f664e7167f9a67f2a882240de6e34ee61a01af7ce8995ad74958b81e8';
         // $bank = '54.183.16.194';
+
+        $app_pk = '8c44cb32b7b0394fe7c6a8c1778d19d095063249b734b226b28d9fb2115dbc74';
         $bank = '20.98.98.0';
         $next_url = $protocol.'://'.$bank.'/bank_transactions?recipient='.$app_pk.'&ordering=-block__created_date';
         
@@ -159,9 +161,11 @@ class DepositServices extends BaseServices{
             $confirmation = 1;
             if($confirmation){
                 $this->businessLogics($deposit);
+                return "ok";
             }else{
                 $deposit->confirmation_checks +=1;
                 $deposit->save();
+                return "waiting for confirmation";
             }
         }
         // return $unconfirmedDeposits;

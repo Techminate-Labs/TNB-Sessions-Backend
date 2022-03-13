@@ -23,7 +23,33 @@ class WithdrawServices extends BaseServices{
             $amount = (int)$request->amount;
             $recipentId = auth()->user()->id;
             $recipientAcc = Account::where('user_id', $recipentId)->first();
-            return $amount;
+            $withdrawable_balance = $recipientAcc->balance - 2;
+            if($amount > $withdrawable_balance){
+                return response(["message"=>'you can withdraw maximum '.$withdrawable_balance.' tnbc']);
+            }
+            $memo = 'TNBS_'.date('md').'_'.date('is').mt_rand(10,100);
+            return [ 
+                [
+                    "withdraw_amount"=>$amount,
+                    "total_balance"=>$recipientAcc->balance,
+                    "withdrawable_balance"=>$withdrawable_balance,
+                ],
+                [
+                    'amount'=> $amount,
+                    'memo'=> $memo,
+                    'recipient'=> $recipientAcc->account_number,
+                ],
+                [
+                    'amount'=> 1,
+                    'fee'=> 'BANK',
+                    'recipient'=> 'bank account',
+                ],
+                [
+                    'amount'=> 1,
+                    'fee'=> 'PRIMARY_VALIDATOR',
+                    'recipient'=> 'PV account',
+                ]
+            ];
         }else{
             return "Insert withdraw amount";
         }
