@@ -10,6 +10,9 @@ use App\Services\BaseServices;
 //Models
 use App\Models\Account;
 
+//Utilities
+use App\Utilities\HttpUtilities;
+
 class WithdrawServices extends BaseServices{
 
     public function withdraw($request){
@@ -19,6 +22,15 @@ class WithdrawServices extends BaseServices{
         //total wallet balance
         //display withdrawable amount
 
+        //bank configuration
+        $bank_config_url = 'http://54.183.16.194/config?format=json';
+        $bank_config = HttpUtilities::fetchUrl($bank_config_url);
+        $protocol = $bank_config->primary_validator->protocol;
+        $ip_address = $bank_config->primary_validator->ip_address;
+        return $bank_config->primary_validator->ip_address;
+        // $balance_lock_url = $bank_config->primary_validator->protocol.'://'.$bank_config->primary_validator->ip_address.':'.$bank_config->primary_validator->port || $default_port .'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
+
+        //check amount
         if ($request->has('amount')){
             $amount = (int)$request->amount;
             $recipentId = auth()->user()->id;
@@ -79,7 +91,8 @@ class WithdrawServices extends BaseServices{
         // $bank = '20.98.98.0';
         $protocol = 'http';
         $bank = $bank_ip;
-        $bank_config_url = $protocol.'://'.$bank_ip.'/config?format=json';
+        // $bank_config_url = $protocol.'://'.$bank_ip.'/config?format=json';
+        $bank_config_url = 'http://54.183.16.194/config?format=json';
         $bank_config = HttpUtilities::fetchUrl($bank_config_url);
         $default_port = 0;
 
