@@ -22,25 +22,40 @@ class WithdrawServices extends BaseServices{
         //total wallet balance
         //display withdrawable amount
 
+        $recipentId = auth()->user()->id;
+        $recipientAcc = Account::where('user_id', $recipentId)->first();
+        $payment_account_number = $recipientAcc->account_number;
+        
         //bank configuration
-        $bank_config_url = 'http://54.183.16.194/config?format=json';
+        // $bank_ip = '54.183.16.194';
+        $bank_ip = '20.98.98.0';
+        $bank_protocol = 'http';
+        $bank_config_url = $bank_protocol.'://'.$bank_ip.'/config?format=json';
         $bank_config = HttpUtilities::fetchUrl($bank_config_url);
+        
         $protocol = $bank_config->primary_validator->protocol;
         $ip_address = $bank_config->primary_validator->ip_address;
-        return $bank_config->primary_validator->ip_address;
-        // $balance_lock_url = $bank_config->primary_validator->protocol.'://'.$bank_config->primary_validator->ip_address.':'.$bank_config->primary_validator->port || $default_port .'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
+        $port = $bank_config->primary_validator->port;
+        $default_port = 0;
+        
+        $balance_lock_url = $protocol.'://'.$ip_address.':'.$port.'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
+        $balance_lock = HttpUtilities::fetchUrl($balance_lock_url)->balance_lock;
+
+        # Check if the signing key is initialized. If not, request the user to initialize by sending a tnbc.
+        if (!$balance_lock){
+            $message =  "Signing key not initialized. Please send a tnbc to the corresponding account number to initialize";
+            return $message;
+        }
 
         //check amount
         if ($request->has('amount')){
             $amount = (int)$request->amount;
-            $recipentId = auth()->user()->id;
-            $recipientAcc = Account::where('user_id', $recipentId)->first();
             $withdrawable_balance = $recipientAcc->balance - 2;
             if($amount > $withdrawable_balance){
                 return response(["message"=>'you can withdraw maximum '.$withdrawable_balance.' tnbc']);
             }
             $memo = 'TNBS_'.date('md').'_'.date('is').mt_rand(10,100);
-            return [ 
+            $txs = [ 
                 [
                     "withdraw_amount"=>$amount,
                     "total_balance"=>$recipientAcc->balance,
@@ -52,16 +67,17 @@ class WithdrawServices extends BaseServices{
                     'recipient'=> $recipientAcc->account_number,
                 ],
                 [
-                    'amount'=> 1,
+                    'amount'=> (int)$bank_config->default_transaction_fee,
                     'fee'=> 'BANK',
-                    'recipient'=> 'bank account',
+                    'recipient'=> $bank_config->account_number
                 ],
                 [
-                    'amount'=> 1,
+                    'amount'=> (int)$bank_config->primary_validator->default_transaction_fee,
                     'fee'=> 'PRIMARY_VALIDATOR',
-                    'recipient'=> 'PV account',
+                    'recipient'=> $bank_config->primary_validator->account_number
                 ]
             ];
+            return $txs;
         }else{
             return "Insert withdraw amount";
         }
