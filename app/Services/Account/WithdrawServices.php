@@ -105,15 +105,23 @@ class WithdrawServices extends BaseServices{
         //http://52.52.160.149/accounts/cafd36d7fc4eb7a7a2b2d242432b4af05a70a7fa54ba5bafcaf0a79a44aa9e43/balance_lock?format=json
         // $bank = '54.183.16.194';
         // $bank = '20.98.98.0';
-        $protocol = 'http';
-        $bank = $bank_ip;
-        // $bank_config_url = $protocol.'://'.$bank_ip.'/config?format=json';
-        $bank_config_url = 'http://54.183.16.194/config?format=json';
+        $recipentId = auth()->user()->id;
+        $recipientAcc = Account::where('user_id', $recipentId)->first();
+        $payment_account_number = $recipientAcc->account_number;
+        
+        //bank configuration
+        // $bank_ip = '54.183.16.194';
+        $bank_ip = '20.98.98.0';
+        $bank_protocol = 'http';
+        $bank_config_url = $bank_protocol.'://'.$bank_ip.'/config?format=json';
         $bank_config = HttpUtilities::fetchUrl($bank_config_url);
+        
+        $protocol = $bank_config->primary_validator->protocol;
+        $ip_address = $bank_config->primary_validator->ip_address;
+        $port = $bank_config->primary_validator->port;
         $default_port = 0;
-
-        $balance_lock_url = $bank_config->primary_validator->protocol.'://'.$bank_config->primary_validator->ip_address.':'.$bank_config->primary_validator->port || $default_port .'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
-        // $balance_lock = requests.get(balance_lock_url).json()['balance_lock']
+        
+        $balance_lock_url = $protocol.'://'.$ip_address.':'.$port.'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
         $balance_lock = HttpUtilities::fetchUrl($balance_lock_url)->balance_lock;
 
         # Check if the signing key is initialized. If not, request the user to initialize by sending a tnbc.
@@ -121,22 +129,23 @@ class WithdrawServices extends BaseServices{
             $message =  "Signing key not initialized. Please send a tnbc to the corresponding account number to initialize";
             return $message;
         }
+
         # Creating a transaction to generate a block.
         $txs = [
             [
                 'amount'=> $amount,
                 'memo'=> $memo,
-                'recipient'=> $destination_account_number,
+                'recipient'=> $recipientAcc->account_number,
             ],
             [
-                'amount'=> int($bank_config->default_transaction_fee),
+                'amount'=> (int)$bank_config->default_transaction_fee,
                 'fee'=> 'BANK',
-                'recipient'=> $bank_config->account_number,
+                'recipient'=> $bank_config->account_number
             ],
             [
-                'amount'=> int($bank_config->primary_validator->default_transaction_fee),
+                'amount'=> (int)$bank_config->primary_validator->default_transaction_fee,
                 'fee'=> 'PRIMARY_VALIDATOR',
-                'recipient'=> $bank_config->primary_validator->account_number,
+                'recipient'=> $bank_config->primary_validator->account_number
             ]
         ];
 
