@@ -13,6 +13,10 @@ use App\Models\Account;
 //Utilities
 use App\Utilities\HttpUtilities;
 
+use Spatie\Crypto\Rsa\KeyPair;
+use Spatie\Crypto\Rsa\PrivateKey;
+use Spatie\Crypto\Rsa\PublicKey;
+
 class WithdrawServices extends BaseServices{
 
     public function withdraw($request){
@@ -21,6 +25,13 @@ class WithdrawServices extends BaseServices{
         //check if sender has enough balance in account
         //total wallet balance
         //display withdrawable amount
+        $pathToPrivateKey = 'key';
+        $pathToPublicKey = 'key';
+        // return $pathToPublicKey;
+        $signature = PrivateKey::fromFile($pathToPrivateKey)->sign('my message'); // returns a string
+        return $signature;
+        // $signature = PrivateKey::fromFile($pathToPrivateKey)->sign('my message'); // returns a string
+        // return $signature;
 
         $recipentId = auth()->user()->id;
         $recipientAcc = Account::where('user_id', $recipentId)->first();
