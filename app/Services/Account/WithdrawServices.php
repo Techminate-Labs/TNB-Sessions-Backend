@@ -20,17 +20,12 @@ use Spatie\Crypto\Rsa\PublicKey;
 class WithdrawServices extends BaseServices{
 
     public function withdraw($request){
-        //encode hexadecimal
-        //signing
-        //check if sender has enough balance in account
-        //total wallet balance
-        //display withdrawable amount
+      
 
         $recipentId = auth()->user()->id;
         $recipientAcc = Account::where('user_id', $recipentId)->first();
         $payment_account_number = $recipientAcc->account_number;
-        
-        //bank configuration
+
         // $bank_ip = '54.183.16.194';
         $bank_ip = '20.98.98.0';
         $bank_protocol = 'http';
@@ -40,7 +35,6 @@ class WithdrawServices extends BaseServices{
         $balance_lock_url = $bank_config->primary_validator->protocol.'://'.$bank_config->primary_validator->ip_address.':'.$bank_config->primary_validator->port.'/accounts'.'/'.$payment_account_number.'/balance_lock?format=json';
         $balance_lock = HttpUtilities::fetchUrl($balance_lock_url)->balance_lock;
 
-        # Check if the signing key is initialized. If not, request the user to initialize by sending a tnbc.
         if (!$balance_lock){
             $message =  "Signing key not initialized. Please send a tnbc to the corresponding account number to initialize";
             return $message;
@@ -70,12 +64,16 @@ class WithdrawServices extends BaseServices{
         
     public function is_valid_key($key){
         # Check if signing key is valid hexadecimal
-       
         # Check if the length of the key is 64
     }
     
 
     public function send_tnbc($bank_ip, $signing_key, $destination_account_number, $amount, $memo){
+        //encode hexadecimal
+        //signing
+        //check if sender has enough balance in account
+        //total wallet balance
+        //display withdrawable amount
       
         $payment_account_number = '';
         $recipentId = auth()->user()->id;

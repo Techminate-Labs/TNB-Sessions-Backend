@@ -60,6 +60,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Session::class)->withTimeStamps();
     }
 
+    public function withdraw(){
+        return $this->hasMany(Withdraw::class);
+    }
+
     // Password reset
     public function sendPasswordResetNotification($token)
     {
