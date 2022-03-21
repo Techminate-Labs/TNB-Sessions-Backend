@@ -20,8 +20,8 @@ class CreateWithdrawsTable extends Migration
             $table->BigInteger('account_balance');
             $table->BigInteger('withdrawable_balance');
             $table->BigInteger('withdraw_amount');
-            $table->BigInteger('status');
             $table->BigInteger('new_balance');
+            $table->string('status');
             $table->timestamps();
         });
     }

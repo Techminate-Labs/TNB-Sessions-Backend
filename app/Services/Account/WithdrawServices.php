@@ -16,9 +16,10 @@ use App\Utilities\HttpUtilities;
 
 class WithdrawServices extends BaseServices{
 
-    public function withdraw($request){
-      
+    private  $accountModel = Account::class;
+    private  $withdrawModel = Withdraw::class;
 
+    public function withdraw($request){
         $recipentId = auth()->user()->id;
         $recipientAcc = Account::where('user_id', $recipentId)->first();
 
@@ -46,15 +47,23 @@ class WithdrawServices extends BaseServices{
                 return response(["message"=>'you can withdraw maximum '.$withdrawable_balance.' tnbc']);
             }
             else{
-                $withdraw = [
-                    'user_id'=>$recipentId,
-                    'account_number'=>$recipientAcc->account_number,
-                    'account_balance'=>$recipientAcc->balance,
-                    'withdrawable_balance'=>$withdrawable_balance,
-                    'withdraw_amount'=>$amount,
-                    'status'=>'pending',
-                    'new_balance'=>$withdrawable_balance - $amount
-                ];
+                $withdraw_exist = Withdraw::where("user_id", $recipentId)->Where("status","pending")->first();
+                if(! $withdraw_exist){
+                    $withdraw = $this->baseRI->storeInDB(
+                        $this->withdrawModel,
+                        [
+                            'user_id'=>$recipentId,
+                            'account_number'=>$recipientAcc->account_number,
+                            'account_balance'=>$recipientAcc->balance,
+                            'withdrawable_balance'=>$withdrawable_balance,
+                            'withdraw_amount'=>$amount,
+                            'status'=>'pending',
+                            'new_balance'=>$withdrawable_balance - $amount
+                        ]
+                    );
+                }else{
+                    return $withdraw_exist;
+                }
                 return response([
                     "message"=>'Withdraw amount '.$amount.' would be transfered to your account soon.',
                     "info"=>$withdraw

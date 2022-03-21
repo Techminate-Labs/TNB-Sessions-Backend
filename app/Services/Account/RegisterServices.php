@@ -34,7 +34,7 @@ class RegisterServices extends BaseServices{
         $userExist = $this->filterRI->filterBy1PropFirst(Tempregister::class, $userId, 'user_id');
         if($userExist) {
             $response = [
-                'message'=> 'Registration on process',
+                'message'=> 'Registration on process. Please send 1 TNBC to '.$agentPk.' from '.$account_number. ' with this memo '. $userExist->verification_code,
                 'account_number'=>$account_number,
                 'agent_account'=>$agentPk,
                 'memo' => $userExist->verification_code
