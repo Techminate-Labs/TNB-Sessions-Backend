@@ -62,6 +62,9 @@ class WithdrawServices extends BaseServices{
                         ]
                     );
                 }else{
+                    $withdraw_exist->withdraw_amount = $amount;
+                    $withdraw_exist->new_balance = $withdrawable_balance - $amount;
+                    $withdraw_exist->save();
                     return $withdraw_exist;
                 }
                 return response([
