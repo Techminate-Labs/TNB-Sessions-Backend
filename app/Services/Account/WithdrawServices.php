@@ -36,7 +36,7 @@ class WithdrawServices extends BaseServices{
             }
             else{
                 $withdraw_exist = Withdraw::where("user_id", $recipentId)->Where("status","pending")->first();
-                if(! $withdraw_exist){
+                if(!$withdraw_exist){
                     $withdraw = $this->baseRI->storeInDB(
                         $this->withdrawModel,
                         [
@@ -55,19 +55,26 @@ class WithdrawServices extends BaseServices{
                     $withdraw_exist->save();
                 }
                 //make an api call to send tnbc service
-                $success = true;
-                if($success){
-                    $recipientAcc->balance = $new_balance;
-                    $recipientAcc->save();
-                    $withdraw_exist->status = "completed";
-                    $withdraw_exist->save();
-                }
                 return response([
                     "message"=>'Withdraw amount '.$amount.' would be transfered to your account soon.'
                 ]);
             }
         }else{
             return "Insert withdraw amount";
+        }
+    }
+
+    public function updateWithdrawStatus(){
+        $withdraw_exist = Withdraw::where("user_id", $recipentId)->Where("status","pending")->first();
+        if(!$withdraw_exist){
+            
+        }
+        $success = true;
+        if($success){
+            $recipientAcc->balance = $new_balance;
+            $recipientAcc->save();
+            $withdraw_exist->status = "completed";
+            $withdraw_exist->save();
         }
     }
 }
