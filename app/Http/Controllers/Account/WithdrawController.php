@@ -20,7 +20,7 @@ class WithdrawController extends Controller
         return $this->services->withdraw($request);
     }
 
-    public function checkConfirmations(){
-        return "ok";
+    public function updateWithdrawStatus(Request $request, $id){
+        return $this->services->updateWithdrawStatus($request, $id);
     }
 }

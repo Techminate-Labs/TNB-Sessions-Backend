@@ -64,17 +64,28 @@ class WithdrawServices extends BaseServices{
         }
     }
 
-    public function updateWithdrawStatus(){
-        $withdraw_exist = Withdraw::where("user_id", $recipentId)->Where("status","pending")->first();
-        if(!$withdraw_exist){
-            
+    public function updateWithdrawStatus($request, $id){
+        $recipentId = auth()->user()->id;
+        $recipientAcc = Account::where('user_id', $recipentId)->first();
+        $withdraw_req = $this->baseRI->findById($this->$withdrawModel, $id);
+        if($withdraw_req){
+            if($request->status == "completed"){
+                $recipientAcc->balance = $new_balance;
+                $recipientAcc->save();
+                $withdraw_req->status = "completed";
+                $withdraw_req->save();
+            }else{
+                $withdraw_req->status = $request->status;
+                $withdraw_req->save();
+            }
+            return response([
+                "message"=>'Successful'
+            ]);
+        }else{
+            return response([
+                "message"=>'Try again'
+            ]);
         }
-        $success = true;
-        if($success){
-            $recipientAcc->balance = $new_balance;
-            $recipientAcc->save();
-            $withdraw_exist->status = "completed";
-            $withdraw_exist->save();
-        }
+        
     }
 }
