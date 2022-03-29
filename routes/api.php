@@ -81,6 +81,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/checkConfirmations', [DepositController::class, 'checkConfirmations']);
     Route::post('/sendTip', [TipController::class, 'sendTip']);
     Route::get('/withdraw', [WithdrawController::class, 'withdraw']);
+    Route::put('/updateWithdrawStatus/{id}', [WithdrawController::class, 'updateWithdrawStatus']);
 
     //event
     Route::get('/eventList', [EventController::class, 'list']);
