@@ -14,9 +14,9 @@ use App\Services\BaseServices;
 class AuthServices extends BaseServices{
 
     public function register($request){
+        return $request;
         $this->logCreate($request);
         $fields = $request->validate([
-            'role_id'=>'required',
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed'
@@ -25,7 +25,7 @@ class AuthServices extends BaseServices{
         $user = $this->baseRI->storeInDB(
             $this->userModel,
             [
-                'role_id' => $fields['role_id'],
+                'role_id' => 1,
                 'name' => $fields['name'],
                 'email' => $fields['email'],
                 'password' => bcrypt($fields['password'])
